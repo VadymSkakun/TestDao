@@ -40,13 +40,12 @@ public class NewDao {
 
             customerQb.where().eq("Country", "France");
 
-            List<Payment> paymentList = null;
-            paymentList = paymentQb.join("CustomerNumber", "CustomerNumber", customerQb)
-                    .query();
+            List<Payment> paymentList = paymentQb.join("CustomerNumber", "CustomerNumber", customerQb).query();
 
             for (Payment paym: paymentList) {
                 System.out.println(paym);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
