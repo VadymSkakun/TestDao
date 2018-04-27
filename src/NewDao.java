@@ -8,31 +8,61 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class NewDao {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         String login = "user1";
         String pass = "pass1";
         String dataBaseURL = "jdbc:mysql://localhost/classicmodels?" + "user=" + login + "&password=" + pass;
-        ConnectionSource connectionSource = new JdbcConnectionSource(dataBaseURL);
-        Dao<Product, String> productStringDao = DaoManager.createDao(connectionSource, Product.class);
+
+        ConnectionSource connectionSource = null;
+        Dao<Product, String> productStringDao = null;
+        try {
+            connectionSource = new JdbcConnectionSource(dataBaseURL);
+            productStringDao = DaoManager.createDao(connectionSource, Product.class);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         QueryBuilder<Product, String> productQb = productStringDao.queryBuilder();
-            List<Product> shipList =  productQb.where().eq("ProductLine", "Ships").query();
+
+        List<Product> shipList = null;
+        try {
+            shipList = productQb.where().eq("ProductLine", "Ships").query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         for (Product list: shipList) {
             System.out.println(list);
         }
 
-        Dao<Customer, Integer> customersDao = DaoManager.createDao(connectionSource, Customer.class);
-        QueryBuilder<Customer, Integer> customerQb = customersDao.queryBuilder();
+        Dao<Customer, Integer> customersDao = null;
+        Dao<Payment, Integer> paymentsDao = null;
+        try {
+            customersDao = DaoManager.createDao(connectionSource, Customer.class);
+            paymentsDao = DaoManager.createDao(connectionSource, Payment.class);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        Dao<Payment, Integer> paymentsDao = DaoManager.createDao(connectionSource, Payment.class);
+        QueryBuilder<Customer, Integer> customerQb = customersDao.queryBuilder();
         QueryBuilder<Payment, Integer> paymentQb = paymentsDao.queryBuilder();
 
-        customerQb.where().eq("Country", "France");
-        List<Payment> paymentList = paymentQb.join("CustomerNumber", "CustomerNumber", customerQb).orderBy("CustomerNumber", true).query();
+        try {
+            customerQb.where().eq("Country", "France");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<Payment> paymentList = null;
+        try {
+            paymentList = paymentQb.join("CustomerNumber", "CustomerNumber", customerQb).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         for (Payment paym: paymentList) {
             System.out.println(paym);
         }
-
-
     }
 }
